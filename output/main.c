@@ -1,6 +1,6 @@
 //Atividade Avaliativa de ED1
 //Dupla: Michel Lima/ Arthur Romano
-
+gaygaygay
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -29,8 +29,6 @@ typedef struct Lista{
 void inicializaLista(Lista* lista){
     lista->inicio = NULL;
     lista->tamanhoLista = 0;
-    printf("");
-    mateuspardo
 }
 
 int main (int argc ,const char *argv[]){
