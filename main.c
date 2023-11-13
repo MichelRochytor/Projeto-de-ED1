@@ -30,6 +30,7 @@ typedef struct No{
 
 typedef struct Lista{
     No* inicio;
+    int alturaArvore;
     int tamanhoLista;
 }Lista;
 
@@ -237,6 +238,15 @@ void pesquisaSalario(No *no, float min, float max) {
         pesquisaSalario(no->proximo, min, max);
     }
 }
+/*
+No* InserirArvore(No* arvore, Funcionarios funcionarios){
+    if (chave_ad < arvore->chave){
+        arvore->esquerda = InserirArvore(arvore->esquerda, chave_ad);
+    }else{
+        arvore->direita = InserirArvore(arvore->direita, chave_ad);
+    }
+    return arvore;
+} */ 
 
 
 void menuArvore(Lista *lista){
