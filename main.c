@@ -25,6 +25,7 @@ typedef struct Funcionarios{
 typedef struct No{
     Funcionarios funcionarios;
     struct No *proximo, *anterior;
+    struct No *direita, *esquerda;
 }No;
 
 typedef struct Lista{
@@ -32,14 +33,6 @@ typedef struct Lista{
     int tamanhoLista;
 }Lista;
 
-typedef struct Noarvore{
-    Funcionarios funcionarios;
-    struct Noarvore *direita, *esquerda;
-}Noarvore;
-
-typedef struct ArvoreAVL{
-    Noarvore *raiz;
-}ArvoreAVL;
 
 //limpar janela pra ficar bunito
 void limparJanela(){
@@ -54,11 +47,6 @@ void limparJanela(){
 void inicializaLista(Lista* lista){
     lista->inicio = NULL;
     lista->tamanhoLista = 0;
-}
-
-//inicializar arvore
-void inicializarArvore(ArvoreAVL *arvore){
-    arvore->raiz = NULL; 
 }
 
 void AjeitarFormatoFloat(char salario[], char formatado[]){
@@ -80,7 +68,7 @@ void AjeitarFormatoFloat(char salario[], char formatado[]){
 void CarregarCSV(Lista* lista){
     FILE* arquivo = fopen("dados.csv","r");//abrir arquivo
     if (arquivo == NULL){
-        printf("Erro ao ler o arquivo\n");
+        printf("Erro ao ler o arquivo!\n");
         exit(1);
     }
     char linha[256];
@@ -105,37 +93,39 @@ void CarregarCSV(Lista* lista){
             printf("Erro ao processar linha do Codigo\n");
             continue;
         }
-        aux->funcionarios.dataNascimento.mes = atoi(token);
+        aux->funcionarios.dataNascimento.mes = atoi(token);//salvar mes da data de nascimento
 
-        token = strtok(NULL,",");
+        token = strtok(NULL,",");//ler linha ate a virgula
         if (token == NULL){
             printf("Erro ao processar linha do Codigo\n");
             continue;
         }
-        aux->funcionarios.dataNascimento.ano = atoi(token);
+        aux->funcionarios.dataNascimento.ano = atoi(token);//salvar ano da data de nescimento
 
-        token = strtok(NULL,",");
+        token = strtok(NULL,",");//ler linha ate a virgula
         if (token == NULL){
             printf("Erro ao processar linha do Codigo\n");
             continue;
         }
-        strcpy(aux->funcionarios.endereco.rua,token);
+        strcpy(aux->funcionarios.endereco.rua,token);//salvar o nome da rua do funcionario
 
-        token = strtok(NULL,",");
+        token = strtok(NULL,",");//ler linha ate a virgula
         if (token == NULL){
             printf("Erro ao processar linha do Codigo\n");
             continue;
         }
-        aux->funcionarios.endereco.numero = atoi(token);
-        token = strtok(NULL,"\n");
+        aux->funcionarios.endereco.numero = atoi(token);//salvar numero do endereco
+        token = strtok(NULL,"\n");//ler linha ate o final
         char salario[40], formatado[40]; 
         if (token == NULL){
             printf("Erro ao processar linha do codigo\n");
             continue;
         }
-        strcpy(salario,token);
-        AjeitarFormatoFloat(salario, formatado);
-        aux->funcionarios.salario = atof(formatado);
+        strcpy(salario,token);//salvar salario em uma string
+        AjeitarFormatoFloat(salario, formatado);//ajeitar string "R$ 1.000,00" para o padrao float 1000.00
+        aux->funcionarios.salario = atof(formatado);//salvar salario em formato de float sem erros
+        
+        //inserir na lista duplamente encadeada pelo inicio
         aux->proximo = lista->inicio;
         aux->anterior = NULL;
         if(lista->inicio != NULL){
@@ -243,14 +233,13 @@ void pesquisaSalario(No *no, float min, float max) {
             printf("Salário: %.2f\n", no->funcionarios.salario);
             printf("Endereço: %s, %d\n", no->funcionarios.endereco.rua, no->funcionarios.endereco.numero);
             printf("Data de nascimento: %d/%d/%d\n\n", no->funcionarios.dataNascimento.dia, no->funcionarios.dataNascimento.mes, no->funcionarios.dataNascimento.ano);
-
         }
         pesquisaSalario(no->proximo, min, max);
     }
 }
 
 
-void menuArvore(Lista *lista,ArvoreAVL *arvoreavl){
+void menuArvore(Lista *lista){
     int opcao;
     while (opcao != 4){
         printf("Escolha:\n1- Mostrar elementos da arvore por Faixa Salarial\n2- Listar Elementos em Ordem crescente de dias vividos\n3- Listar Elementos em Ordem decrescente de dias vividos\n4- Sair\n");
@@ -276,8 +265,6 @@ void menuArvore(Lista *lista,ArvoreAVL *arvoreavl){
 
 int main () {
     Lista lista;
-    ArvoreAVL arvoreavl;
-    inicializarArvore(&arvoreavl);
     inicializaLista(&lista);
     CarregarCSV(&lista);
     int opcao,menu;
@@ -352,7 +339,7 @@ int main () {
                 scanf("%d",&confirmar);
                 if (confirmar == 1){
                     limparJanela();
-                    menuArvore(&lista,&arvoreavl);
+                    menuArvore(&lista);
                 }else{
                     limparJanela();
                     break;
