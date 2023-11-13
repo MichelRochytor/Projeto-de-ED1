@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 
 typedef struct Endereco{
@@ -31,10 +32,35 @@ typedef struct Lista{
     int tamanhoLista;
 }Lista;
 
+typedef struct Noarvore{
+    Funcionarios funcionarios;
+    struct Noarvore *direita, *esquerda;
+}Noarvore;
+
+typedef struct ArvoreAVL{
+    Noarvore *raiz;
+}ArvoreAVL;
+
+//limpar janela pra ficar bunito
+void limparJanela(){
+    #ifdef _WIN32
+    system("cls");
+    #elif __linux__
+    system("clear");
+    #endif
+}
+
+//inicializar lista
 void inicializaLista(Lista* lista){
     lista->inicio = NULL;
     lista->tamanhoLista = 0;
 }
+
+//inicializar arvore
+void inicializarArvore(ArvoreAVL *arvore){
+    arvore->raiz = NULL; 
+}
+
 void AjeitarFormatoFloat(char salario[], char formatado[]){
     int j = 0;
     int tamanho = strlen(salario);
@@ -50,8 +76,9 @@ void AjeitarFormatoFloat(char salario[], char formatado[]){
     formatado[j] = '\0';
 }
 
+//ler arquivo CSV
 void CarregarCSV(Lista* lista){
-    FILE* arquivo = fopen("dados.csv","r");
+    FILE* arquivo = fopen("dados.csv","r");//abrir arquivo
     if (arquivo == NULL){
         printf("Erro ao ler o arquivo\n");
         exit(1);
@@ -59,21 +86,21 @@ void CarregarCSV(Lista* lista){
     char linha[256];
     fgets(linha, sizeof(linha), arquivo); // Ignora a primeira linha
     while(fgets(linha,sizeof(linha),arquivo)){
-        No* aux = (No*) malloc (sizeof(No)); 
-        char *token = strtok(linha,",");
+        No* aux = (No*) malloc (sizeof(No)); //alocar memoria
+        char *token = strtok(linha,",");//ler linha ate a virgula
         if (token == NULL){
             printf("Erro ao processar linha do Codigo\n");
             continue;
         }
-        strcpy(aux->funcionarios.nome, token);
-        token = strtok(NULL,"/");
+        strcpy(aux->funcionarios.nome, token);//salvar nome
+        token = strtok(NULL,"/");//ler linha ate a barra
         if (token == NULL){
             printf("Erro ao processar linha do Codigo\n");
             continue;
         }
-        aux->funcionarios.dataNascimento.dia = atoi(token);
+        aux->funcionarios.dataNascimento.dia = atoi(token);//salvar dia da data de nascimento
         
-        token = strtok(NULL,"/");
+        token = strtok(NULL,"/");//ler linha ate a barra
         if (token == NULL){
             printf("Erro ao processar linha do Codigo\n");
             continue;
@@ -214,32 +241,54 @@ void pesquisaSalario(No *no, float min, float max) {
 
             printf("Funcionario: %s\n", no->funcionarios.nome);
             printf("Salário: %.2f\n", no->funcionarios.salario);
-            printf("Endereço: %s, %i\n", no->funcionarios.endereco.rua, no->funcionarios.endereco.numero);
-            printf("Data de nascimento: %i/%i/%i\n\n", no->funcionarios.dataNascimento.dia, no->funcionarios.dataNascimento.mes, no->funcionarios.dataNascimento.ano);
+            printf("Endereço: %s, %d\n", no->funcionarios.endereco.rua, no->funcionarios.endereco.numero);
+            printf("Data de nascimento: %d/%d/%d\n\n", no->funcionarios.dataNascimento.dia, no->funcionarios.dataNascimento.mes, no->funcionarios.dataNascimento.ano);
 
         }
-
         pesquisaSalario(no->proximo, min, max);
-
     }
-
 }
 
 
-int main () {
-    Lista lista;
-    inicializaLista(&lista);
-    printf("Inicializou com sucesso\n");
-    CarregarCSV(&lista);
-    printf("Carregou com sucesso\n");
-    int opcao,menu;
-    system("clear");
-    while (opcao != 5){
-        printf("Escolha: \n1- Listar Pessoas\n2- Listar A-Z\n3- Listar Z-A\n4- Pesquisar Salario\n5- Sair\n");
+void menuArvore(Lista *lista,ArvoreAVL *arvoreavl){
+    int opcao;
+    while (opcao != 4){
+        printf("Escolha:\n1- Mostrar elementos da arvore por Faixa Salarial\n2- Listar Elementos em Ordem crescente de dias vividos\n3- Listar Elementos em Ordem decrescente de dias vividos\n4- Sair\n");
         scanf("%d",&opcao);
         switch(opcao){
             case 1:
-                system("clear");
+
+            break;
+            case 2:
+            break;
+            case 3:
+            break;
+            case 4:
+                limparJanela();
+                exit(1);
+            break;
+            default:
+                limparJanela();
+                printf("Opcao Invalida!\n");
+        }
+    }
+}
+
+int main () {
+    Lista lista;
+    ArvoreAVL arvoreavl;
+    inicializarArvore(&arvoreavl);
+    inicializaLista(&lista);
+    CarregarCSV(&lista);
+    int opcao,menu;
+    limparJanela();
+    while (opcao != 6){
+        setbuf(stdin,NULL);
+        printf("Escolha: \n1- Listar Pessoas\n2- Listar A-Z\n3- Listar Z-A\n4- Pesquisar Salario\n5- Transformar Arvore AVL\n6- Sair\n");
+        scanf("%d",&opcao);
+        switch(opcao){
+            case 1:
+                limparJanela();
                 imprimir(&lista);
                 printf("digite 1 para voltar ao menu:");
                 scanf("%d",&menu);
@@ -247,18 +296,38 @@ int main () {
                     imprimir(&lista);
                 }else{
                     menu = 0;
-                    system("clear");
+                    limparJanela();
                     break;
                 }
                 break;
             case 2:
+                limparJanela();
                 ListarAZlista(&lista);
+                printf("digite 1 para voltar ao menu:");
+                scanf("%d",&menu);
+                if (menu != 1){
+                    ListarAZlista(&lista);
+                }else{
+                    menu = 0;
+                    limparJanela();
+                    break;
+                }
                 break;
             case 3:
+                limparJanela();
                 ListarZAlista(&lista);
+                printf("digite 1 para voltar ao menu:");
+                scanf("%d",&menu);
+                if (menu != 1){
+                    ListarZAlista(&lista);
+                }else{
+                    menu = 0;
+                    limparJanela();
+                    break;
+                }
                 break;
             case 4:
-            system("clear");
+                limparJanela();
                 float min, max;
                 printf("Digite a margem de pesquisa: ");
                 scanf("%f%f",&min,&max);
@@ -271,19 +340,32 @@ int main () {
                     pesquisaSalario(lista.inicio,min,max);
                 }else{
                     menu = 0;
-                    system("clear");
+                    limparJanela();
                     break;
                 }
                 break;
             case 5:
+                int confirmar;
+                limparJanela();
+                printf("Ao fazer isso a lista Deixara de existir e se tornara uma Arvore AVL\nseja proseguir com a transformacao?\n");
+                printf("1-SIM 2-NAO\n");
+                scanf("%d",&confirmar);
+                if (confirmar == 1){
+                    limparJanela();
+                    menuArvore(&lista,&arvoreavl);
+                }else{
+                    limparJanela();
+                    break;
+                }
+                break;
+            case 6:
                 exit(1);
                 break;
             default:
+                limparJanela();
                 printf("Opcao Invalida!\n");
-                system("clear");
         }
     }
 
-    return 0;
-    
+    return 0;   
 }
