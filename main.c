@@ -5,19 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// typedef struct Arvore {
-
-//     No *raiz;
-
-// }Arvore;
-
-// typedef struct No {
-
-//     int chave;
-//     struct No *esquerda, *direita;
-
-// }No;
-
 typedef struct Endereco{
     char rua[100];
     int numero;
@@ -99,7 +86,6 @@ void CarregarCSV(Lista* lista){
             continue;
         }
         aux->funcionarios.dataNascimento.ano = atoi(token);
-        //printf("%d\n",aux->funcionarios.dataNascimento.ano);
 
         token = strtok(NULL,",");
         if (token == NULL){
@@ -132,58 +118,92 @@ void CarregarCSV(Lista* lista){
     }
 }
 
-// void pesquisaAZ(No *no) {
+void imprimir(Lista *lista){
+    No* listar = lista->inicio;
+    printf("Lista: \n");
+    while (listar != NULL){
+        printf("Nome: %s\n", listar->funcionarios.nome);
+        printf("Data de Nascimento %d/%d/%d\n", listar->funcionarios.dataNascimento.dia
+                                              , listar->funcionarios.dataNascimento.mes
+                                              , listar->funcionarios.dataNascimento.ano);
+        printf("Endereço: %s\n", listar->funcionarios.endereco.rua);
+        printf("Endereço numero: %d\n", listar->funcionarios.endereco.numero);
+        printf("Salario: %.2f\n\n",listar->funcionarios.salario);
+        listar = listar->proximo;
+    }
+    printf("\n\n");
+}
 
-//     No auxNo;
+void ListarAZlista(Lista* lista){
+    Lista listaOrdenada;
+    listaOrdenada.inicio = NULL;
+    No* listar = lista->inicio;
+    while (listar != NULL){
+        No* aux = (No*) malloc (sizeof(No));
+        No* atual;
+        No* anterior = NULL;
+        if(aux == NULL){
+            printf("erro!");
+            exit(1);
+        }
+        aux->funcionarios = listar->funcionarios;
+        aux->proximo = NULL;
+        if(listaOrdenada.inicio == NULL){
+            listaOrdenada.inicio = aux;
+        }else{
+            atual = listaOrdenada.inicio;
+            while(atual != NULL && strcmp(atual->funcionarios.nome, aux->funcionarios.nome) < 0){
+                anterior = atual;
+                atual = atual->proximo;
+            }
+            if(anterior == NULL){
+                aux->proximo = listaOrdenada.inicio;
+                listaOrdenada.inicio = aux;
+            }else{
+                anterior->proximo = aux;
+                aux->proximo = atual;
+            }
+        }
+        listar = listar->proximo;
+    }
+    imprimir(&listaOrdenada);
+}
 
-//     if(no == NULL || no->proximo == NULL) {  //condição de parada se chegar no final da lista
+void ListarZAlista(Lista* lista){
+    Lista listaOrdenada;
+    listaOrdenada.inicio = NULL;
+    No* listar = lista->inicio;
+    while (listar != NULL){
+        No* aux = (No*) malloc (sizeof(No));
+        No* atual;
+        No* anterior = NULL;
+        if(aux == NULL){
+            printf("erro!");
+            exit(1);
+        }
+        aux->funcionarios = listar->funcionarios;
+        aux->proximo = NULL;
+        if(listaOrdenada.inicio == NULL){
+            listaOrdenada.inicio = aux;
+        }else{
+            atual = listaOrdenada.inicio;
+            while(atual != NULL && strcmp(atual->funcionarios.nome, aux->funcionarios.nome) > 0){
+                anterior = atual;
+                atual = atual->proximo;
+            }
+            if(anterior == NULL){
+                aux->proximo = listaOrdenada.inicio;
+                listaOrdenada.inicio = aux;
+            }else{
+                anterior->proximo = aux;
+                aux->proximo = atual;
+            }
+        }
+        listar = listar->proximo;
+    }
+    imprimir(&listaOrdenada);
+}
 
-//         return;
-
-//     }
-//     else {
-
-//         if(no->anterior == NULL) {  // condição pra pegar o primeiro nó da lista
-
-//             if(strcmp(no->funcionarios.nome, no.proximo.funcionarios.nome) == 1) {
-
-//                 auxNo = no;
-//                 no = no->proximo;
-//                 no->proximo = auxNo;
-
-//             }
-
-//         }
-//         else {  //condições se estiver no meio da lista
-
-//             if(strcmp(no->anterior->funcionarios.nome, no->funcionarios.nome) == 1) {  
-
-//                 auxNo = no->anterior;
-//                 no->anterior = no;
-//                 no = auxNo;
-                
-//             }
-
-//             if(strcmp(no->funcionarios.nome, no->proximo.funcionarios.nome) == 1) {
-
-//                 auxNo = no;
-//                 no = no->proximo;
-//                 no->proximo = auxNo;
-
-//             }
-
-//             pesquisaAZ(no->proximo);
-
-//         }
-
-//     }
-
-// }
-
-// void pesquisaZA(Lista *lista) {
-
-
-// }
 
 void pesquisaSalario(No *no, float min, float max) {
     if(no == NULL) {
@@ -205,91 +225,64 @@ void pesquisaSalario(No *no, float min, float max) {
 
 }
 
-// void transformaLista(Lista *lista, Arvore *arvore) {
-
-
-// }
-
-
-void imprimir(Lista *lista){
-    No *listar = lista->inicio;
-    printf("Lista: \n");
-    while (listar != NULL){
-        printf("Nome: %s\n", listar->funcionarios.nome);
-        printf("Data de Nascimento %d/%d/%d\n", listar->funcionarios.dataNascimento.dia
-                                              , listar->funcionarios.dataNascimento.mes
-                                              , listar->funcionarios.dataNascimento.ano);
-        printf("Endereço: %s\n", listar->funcionarios.endereco.rua);
-        printf("Endereço numero: %d\n", listar->funcionarios.endereco.numero);
-        printf("Salario: %.2f\n\n",listar->funcionarios.salario);
-        listar = listar->proximo;
-    }
-    printf("\n\n");
-} 
 
 int main () {
     Lista lista;
-    // Arvore arvore;
-    // arvore.raiz = NULL;
     inicializaLista(&lista);
     printf("Inicializou com sucesso\n");
     CarregarCSV(&lista);
     printf("Carregou com sucesso\n");
-    //imprimir(&lista);
-    pesquisaSalario(lista.inicio, 2000.00, 2500.00);
-
-    //  do {
-
-    //     int escolha;
-    //     printf("Digite o que deseja fazer:\n");
-    //     printf("1 - Pesquisar funcionários por intervalo salarial\n");
-    //     printf("2 - Exibir lista de funcionários ordenados por nome de A a Z\n");
-    //     printf("3 - Exibir a lista de funcionários ordenados por nome de Z a A\n");
-    //     printf("4 - Transformar a lista duplamente encadeada em árvore AVL\n");
-    //     printf("R: ");
-    //     scanf("%i", &escolha);
-
-    //     switch(escolha) {
-
-    //         case 1:
-    //         int min, max;
-    //         do {
-
-    //             printf("Digite abaixo o valor mínimo do intervalo: ");
-    //             scanf("%i", &min);
-    //             printf("Digite abaixo o valor máximo do intervalo: ");
-    //             scanf("%i", &max);
-
-    //             if(min > max) {
-
-    //                 printf("Valores mínimo e máximo inválidos! Digite novamente\n");
-
-    //             }
-
-    //         }while(min > max);
-
-    //         pesquisaSalario(&lista, min, max);
-    //         break;
-
-    //         case 2:
-    //         pesquisaAZ(&lista);
-    //         break;
-
-    //         case 3:
-    //         pesquisaZA(&lista);
-    //         break;
-
-    //         case 4:
-    //         transformaLista(&lista, &arvore);
-    //         break;
-
-    //         default:
-    //         printf("Opção inválida\n");
-    //         break;
-
-
-    //     }while(1);
-    //  }
+    int opcao,menu;
+    system("clear");
+    while (opcao != 5){
+        printf("Escolha: \n1- Listar Pessoas\n2- Listar A-Z\n3- Listar Z-A\n4- Pesquisar Salario\n5- Sair\n");
+        scanf("%d",&opcao);
+        switch(opcao){
+            case 1:
+                system("clear");
+                imprimir(&lista);
+                printf("digite 1 para voltar ao menu:");
+                scanf("%d",&menu);
+                if (menu != 1){
+                    imprimir(&lista);
+                }else{
+                    menu = 0;
+                    system("clear");
+                    break;
+                }
+                break;
+            case 2:
+                ListarAZlista(&lista);
+                break;
+            case 3:
+                ListarZAlista(&lista);
+                break;
+            case 4:
+            system("clear");
+                float min, max;
+                printf("Digite a margem de pesquisa: ");
+                scanf("%f%f",&min,&max);
+                pesquisaSalario(lista.inicio,min,max);
+                printf("digite 1 para voltar ao menu:");
+                scanf("%d",&menu);
+                if (menu != 1){
+                    printf("Digite a margem de pesquisa: ");
+                    scanf("%f%f",&min,&max);
+                    pesquisaSalario(lista.inicio,min,max);
+                }else{
+                    menu = 0;
+                    system("clear");
+                    break;
+                }
+                break;
+            case 5:
+                exit(1);
+                break;
+            default:
+                printf("Opcao Invalida!\n");
+                system("clear");
+        }
+    }
 
     return 0;
     
